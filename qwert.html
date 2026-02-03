@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Gunting Batu Kertas - Mode Babak</title>
+</head>
+
+<body style="font-family: Arial; background:#b0b0b0; text-align:center; padding:20px;">
+
+<h1>GUNTING ✂ BATU 🪨 KERTAS</h1>
+<h2 id="babak">Babak 1</h2>
+
+<p id="skor">User: 0 | Komputer: 0 | Seri: 0</p>
+<p id="hasil">Pilih salah satu tombol</p>
+
+<button onclick="main('gunting')">✂ Gunting</button>
+<button onclick="main('batu')">🪨 Batu</button>
+<button onclick="main('kertas')">📄 Kertas</button>
+
+<h3>Riwayat Babak</h3>
+<pre id="riwayat">-</pre>
+
+<script>
+let skorUser = 0;
+let skorKomputer = 0;
+let seri = 0;
+
+let babak = 1;
+let menangUser = 0;
+let menangKomputer = 0;
+
+const TARGET = 5;
+const MAX = 15;
+
+function updateSkor() {
+  document.getElementById("skor").innerText =
+    `User: ${skorUser} | Komputer: ${skorKomputer} | Seri: ${seri}`;
+}
+
+function resetBabak(pesan) {
+  skorUser = 0;
+  skorKomputer = 0;
+  seri = 0;
+  updateSkor();
+  document.getElementById("hasil").innerText = pesan;
+}
+
+function cekBabak() {
+
+  // jika seri 5x dan skor sama → ulang babak
+  if (seri >= 5 && skorUser === skorKomputer) {
+    resetBabak("🤝 Seri 5x! Babak diulang");
+    return;
+  }
+
+  // cek kemenangan babak
+  if (skorUser >= TARGET || skorKomputer >= TARGET) {
+    if (Math.abs(skorUser - skorKomputer) >= 2 ||
+        skorUser === MAX || skorKomputer === MAX) {
+
+      let teks;
+      if (skorUser > skorKomputer) {
+        menangUser++;
+        teks = `USER menang di babak ${babak}`;
+      } else {
+        menangKomputer++;
+        teks = `KOMPUTER menang di babak ${babak}`;
+      }
+
+      document.getElementById("riwayat").innerText += "\n" + teks;
+
+      setTimeout(() => lanjutBabak(teks), 1500);
+    }
+  }
+}
+
+function lanjutBabak(teks) {
+
+  // jika sudah ada pemenang game
+  if (menangUser === 2 || menangKomputer === 2 || babak === 3) {
+    let akhir;
+    if (menangUser > menangKomputer) {
+      akhir = "🎉 USER MENANG PERMAINAN!";
+    } else if (menangKomputer > menangUser) {
+      akhir = "🤖 KOMPUTER MENANG PERMAINAN!";
+    } else {
+      akhir = "🤝 HASIL AKHIR SERI!";
+    }
+
+    document.getElementById("hasil").innerText = akhir;
+    return;
+  }
+
+  babak++;
+  document.getElementById("babak").innerText = "Babak " + babak;
+  resetBabak(teks + " → lanjut babak berikutnya");
+}
+
+function main(pilihanUser) {
+  const pilihan = ["gunting", "batu", "kertas"];
+  const komputer = pilihan[Math.floor(Math.random() * 3)];
+
+  let hasil;
+  if (pilihanUser === komputer) {
+    seri++;
+    hasil = "Seri 🤝";
+  } else if (
+    (pilihanUser === "batu" && komputer === "gunting") ||
+    (pilihanUser === "kertas" && komputer === "batu") ||
+    (pilihanUser === "gunting" && komputer === "kertas")
+  ) {
+    skorUser++;
+    hasil = "User MENANG 🎉";
+  } else {
+    skorKomputer++;
+    hasil = "Komputer MENANG 🤖";
+  }
+
+  document.getElementById("hasil").innerText =
+    `User: ${pilihanUser}\nKomputer: ${komputer}\n${hasil}`;
+
+  updateSkor();
+  cekBabak();
+}
+</script>
+
+</body>
+</html>
